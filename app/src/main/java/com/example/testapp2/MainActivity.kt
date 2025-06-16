@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +36,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.testapp2.data.UnsplashApiProvider
 import com.example.testapp2.data.UnsplashItem
@@ -54,7 +52,14 @@ class MainActivity : ComponentActivity(), UnsplashResult {
         enableEdgeToEdge()
         val provider = UnsplashApiProvider()
         provider.fetchImages(this)
-
+        val images: List<Int> = listOf(
+            R.drawable.photo1,
+            R.drawable.photo2,
+            R.drawable.photo3,
+            R.drawable.photo4,
+            R.drawable.photo5,
+            R.drawable.photo6
+        )
         setContent {
 
             photos = remember { mutableStateOf(emptyList()) }
@@ -100,8 +105,11 @@ class MainActivity : ComponentActivity(), UnsplashResult {
                             modifier = Modifier.fillMaxWidth()
                             )
                         }
-                        items(photos.value) { photo ->
-                             FetchedItem(photo)
+//                        items(photos.value) { photo ->
+//                             FetchedItem(photo)
+//                        }
+                        items(images) { resId ->
+                            CardItem(resId, onClick)
                         }
                     }
                 }

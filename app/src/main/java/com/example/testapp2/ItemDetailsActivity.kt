@@ -6,42 +6,50 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.testapp2.ui.theme.TestApp2Theme
 
-class ItemDetailsActivity: ComponentActivity() {
+class ItemDetailsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val onClick = { resId: Int ->
-            val intent = Intent(
-                this@ItemDetailsActivity,
-                FullScreenPhotoActivity::class.java
-            )
-            intent.putExtra("resId", resId)
-            startActivity(intent)
+
+        val onClickPhoto: (Int) -> Unit = { resId ->
+            Intent(this, FullScreenPhotoActivity::class.java).apply {
+                putExtra("resId", resId)
+                startActivity(this)
+            }
         }
-        val resId = intent.getIntExtra("resId", 0)
+
+        val photoResId = intent.getIntExtra("resId", R.drawable.photo1)
         setContent {
             TestApp2Theme {
                 Scaffold { innerPadding ->
-                    ItemDetailsScreen(resId, modifier = Modifier.padding(innerPadding), onClick)
+                    ItemDetailsScreen(photoResId, Modifier.padding(innerPadding), onClickPhoto)
                 }
             }
         }
@@ -49,39 +57,137 @@ class ItemDetailsActivity: ComponentActivity() {
 }
 
 @Composable
-fun ItemDetailsScreen(resId: Int, modifier: Modifier = Modifier, onClick: (Int) -> Unit) {
-    Column (modifier = modifier.fillMaxSize()) {
-    Image(painter = painterResource(resId), contentDescription = null, modifier = Modifier
-        .fillMaxWidth()
-        .clickable(onClick = {onClick(resId)})
-        , contentScale = ContentScale.FillWidth)
-        Row(modifier = Modifier.padding(16.dp).fillMaxSize()) {
-            Column(modifier = Modifier.weight(1f)) {
-                CardItem("Item 1", "Description 1")
-                CardItem("Item 2", "Description 2")
-                CardItem("Item 3", "Description 3")
-
-            }
-            Column(modifier = Modifier.weight(1f)) {
-                CardItem("Item 4", "Description 4")
-                CardItem("Item 5", "Description 5")
-                CardItem("Item 6", "Description 6")
+fun ItemDetailsScreen(
+    photoResId: Int,
+    modifier: Modifier = Modifier,
+    onClickPhoto: (Int) -> Unit
+) {
+    Column(modifier = modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .clickable { onClickPhoto(photoResId) }
+        ) {
+            Image(
+                painter = painterResource(photoResId),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize()
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(16.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f),
+                        shape = RoundedCornerShape(50)
+                    )
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+            ) {
+                Icon(Icons.Filled.Place, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    "Barcelona, Spain",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
-        HorizontalDivider()
-        Row (horizontalArrangement = Arrangement.SpaceEvenly) {
-            CardItem("Item 7", "Description 7")
-            CardItem("Item 8", "Description 8")
-            CardItem("Item 9", "Description 9")
 
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Image(
+                painter = painterResource(R.drawable.photo6),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                "Biel Morro",
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+            )
+            Spacer(Modifier.weight(1f))
+            IconButton(onClick = {  }) {
+                Icon(Icons.Default.Add, contentDescription = null)
+            }
+            IconButton(onClick = {  }) {
+                Icon(Icons.Filled.FavoriteBorder, contentDescription = null)
+            }
+            IconButton(onClick = {  }) {
+                Icon(Icons.Filled.Star, contentDescription = null)
+            }
+        }
+
+        HorizontalDivider()
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                MetadataItem("Camera", "NIKON D3200")
+                Spacer(Modifier.height(8.dp))
+                MetadataItem("Focal Length", "18.0 mm")
+                Spacer(Modifier.height(8.dp))
+                MetadataItem("ISO", "100")
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                MetadataItem("Aperture", "f/5.0")
+                Spacer(Modifier.height(8.dp))
+                MetadataItem("Shutter Speed", "1/125 s")
+                Spacer(Modifier.height(8.dp))
+                MetadataItem("Dimensions", "3906 × 4882")
+            }
+        }
+
+        HorizontalDivider()
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            StatItem("Views", "8.8 M")
+            StatItem("Downloads", "99.1 K")
+            StatItem("Likes", "1.8 K")
+        }
+
+        HorizontalDivider()
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            AssistChip(onClick = {}, label = { Text("barcelona") })
+            AssistChip(onClick = { }, label = { Text("spain") })
         }
     }
 }
 
 @Composable
-fun CardItem(name: String, description: String) {
+fun MetadataItem(label: String, value: String) {
     Column {
-        Text(text = name, fontWeight = FontWeight.Bold)
-        Text(text = description)
+        Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(value, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium))
+    }
+}
+
+@Composable
+fun StatItem(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(value, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
+        Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
