@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
@@ -36,10 +38,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
+import com.example.testapp2.data.SearchResponse
 import com.example.testapp2.data.UnsplashApiProvider
 import com.example.testapp2.data.UnsplashItem
 import com.example.testapp2.data.cb.UnsplashResult
@@ -58,6 +62,9 @@ class MainActivity : ComponentActivity(), UnsplashResult {
         val provider = UnsplashApiProvider()
         provider.fetchImages(this)
 
+        val onSearchAction = { search: String ->
+            provider.searchImages(this, search)
+        }
 
 
         setContent {
@@ -92,6 +99,8 @@ class MainActivity : ComponentActivity(), UnsplashResult {
                             intent.putExtra(IMAGE_INTENT_KEY, image)
                             startActivity(intent)
                         }
+
+
                         item {
                             val search = remember { mutableStateOf("") }
 
@@ -102,7 +111,11 @@ class MainActivity : ComponentActivity(), UnsplashResult {
                                 leadingIcon = { Icon(Icons.Default.Search,
                                     contentDescription = null) },
                                 label = { Text("Search") },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                                keyboardActions = KeyboardActions {
+                                    onSearchAction(search.value)
+                                }
                             )
                         }
                         items(photos.value) { photo ->
@@ -115,11 +128,19 @@ class MainActivity : ComponentActivity(), UnsplashResult {
         }
     }
 
-    override fun onSuccess(images: List<UnsplashItem>) {
+    override fun onSuccessFetchImages(images: List<UnsplashItem>) {
         this.photos.value = images
     }
 
-    override fun onFail() {
+    override fun onFailFetchImages() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onSuccessSearchImages(result: SearchResponse) {
+        this.photos.value = result.results
+    }
+
+    override fun onFailSearchImages() {
         TODO("Not yet implemented")
     }
 }

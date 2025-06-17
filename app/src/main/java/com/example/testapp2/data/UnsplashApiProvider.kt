@@ -38,14 +38,36 @@ class UnsplashApiProvider() {
                 response: Response<List<UnsplashItem>>
             ) {
                 if (response.isSuccessful) {
-                    cb.onSuccess(response.body() ?: emptyList())
+                    cb.onSuccessFetchImages(response.body() ?: emptyList())
                 } else {
-                    cb.onFail()
+                    cb.onFailFetchImages()
                 }
             }
 
             override fun onFailure(call: Call<List<UnsplashItem>>, t: Throwable) {
-                cb.onFail()
+                cb.onFailFetchImages()
+            }
+        })
+    }
+
+    fun searchImages(cb: UnsplashResult, query: String) {
+
+        val emptyResponse = SearchResponse(0, 0, emptyList())
+
+        retrofit.searchPhotos(query).enqueue(object: Callback<SearchResponse> {
+            override fun onResponse(
+                call: Call<SearchResponse>,
+                response: Response<SearchResponse>
+            ) {
+                if (response.isSuccessful) {
+                    cb.onSuccessSearchImages(response.body() ?: emptyResponse)
+                } else {
+                    cb.onFailSearchImages()
+                }
+            }
+
+            override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                cb.onFailSearchImages()
             }
         })
     }
