@@ -63,7 +63,10 @@ class MainActivity : ComponentActivity(), UnsplashResult {
         provider.fetchImages(this)
 
         val onSearchAction = { search: String ->
-            provider.searchImages(this, search)
+            if (search.isBlank())
+                provider.fetchImages(this)
+            else
+                provider.searchImages(this, search)
         }
 
 
