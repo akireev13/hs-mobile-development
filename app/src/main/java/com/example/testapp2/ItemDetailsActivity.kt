@@ -28,9 +28,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import com.example.testapp2.data.UnsplashItem
+import com.example.testapp2.shared.IMAGE_INTENT_KEY
+import com.example.testapp2.shared.helpers.paintAsyncImage
 import com.example.testapp2.ui.theme.TestApp2Theme
 
 class ItemDetailsActivity : ComponentActivity() {
@@ -38,18 +44,18 @@ class ItemDetailsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val onClickPhoto: (Int) -> Unit = { resId ->
+        val onClickPhoto: (String?) -> Unit = { url ->
             Intent(this, FullScreenPhotoActivity::class.java).apply {
-                putExtra("resId", resId)
+                putExtra("url", url)
                 startActivity(this)
             }
         }
 
-        val photoResId = intent.getIntExtra("resId", R.drawable.photo1)
+        val imageData = intent.extras!!.get(IMAGE_INTENT_KEY) as UnsplashItem
         setContent {
             TestApp2Theme {
                 Scaffold { innerPadding ->
-                    ItemDetailsScreen(photoResId, Modifier.padding(innerPadding), onClickPhoto)
+                    ItemDetailsScreen(imageData, Modifier.padding(innerPadding), onClickPhoto)
                 }
             }
         }
@@ -58,19 +64,20 @@ class ItemDetailsActivity : ComponentActivity() {
 
 @Composable
 fun ItemDetailsScreen(
-    photoResId: Int,
+    imageData: UnsplashItem,
     modifier: Modifier = Modifier,
-    onClickPhoto: (Int) -> Unit
+    onClickPhoto: (String?) -> Unit
 ) {
+
     Column(modifier = modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(250.dp)
-                .clickable { onClickPhoto(photoResId) }
+                .clickable { onClickPhoto(imageData.urls?.regular) }
         ) {
             Image(
-                painter = painterResource(photoResId),
+                painter = paintAsyncImage(LocalContext.current, imageData.urls?.regular),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.matchParentSize()
@@ -89,7 +96,7 @@ fun ItemDetailsScreen(
                 Icon(Icons.Filled.Place, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
                 Spacer(Modifier.width(4.dp))
                 Text(
-                    "Barcelona, Spain",
+                    imageData.user?.location ?: "Unknown location",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -103,7 +110,7 @@ fun ItemDetailsScreen(
                 .padding(16.dp)
         ) {
             Image(
-                painter = painterResource(R.drawable.photo6),
+                painter = paintAsyncImage(LocalContext.current, imageData.user?.profile_image?.medium),
                 contentDescription = null,
                 modifier = Modifier
                     .size(40.dp)
@@ -111,7 +118,7 @@ fun ItemDetailsScreen(
             )
             Spacer(Modifier.width(8.dp))
             Text(
-                "Biel Morro",
+                imageData.user?.name ?: "Unknown user",
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
             )
             Spacer(Modifier.weight(1f))
@@ -157,9 +164,9 @@ fun ItemDetailsScreen(
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            StatItem("Views", "8.8 M")
-            StatItem("Downloads", "99.1 K")
-            StatItem("Likes", "1.8 K")
+            StatItem("Views", "666K" )
+            StatItem("Downloads", "66 K")
+            StatItem("Likes", imageData.likes.toString())
         }
 
         HorizontalDivider()

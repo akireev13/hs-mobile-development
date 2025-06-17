@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import com.example.testapp2.shared.helpers.paintAsyncImage
 import com.example.testapp2.ui.theme.TestApp2Theme
 
 class FullScreenPhotoActivity : ComponentActivity() {
@@ -17,7 +19,7 @@ class FullScreenPhotoActivity : ComponentActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             enableEdgeToEdge()
-            val resId = intent.getIntExtra("resId", 0)
+            val imageUrl = intent.getStringExtra("url")
             setContent {
                 TestApp2Theme {
                     Scaffold { innerPadding ->
@@ -25,7 +27,7 @@ class FullScreenPhotoActivity : ComponentActivity() {
                             modifier = Modifier
                                 .padding(innerPadding)
                                 .fillMaxSize(),
-                            painter = painterResource(resId),
+                            painter = paintAsyncImage(LocalContext.current, imageUrl),
                             contentDescription = null
                         )
                     }

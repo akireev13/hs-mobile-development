@@ -33,13 +33,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
 import com.example.testapp2.data.UnsplashApiProvider
 import com.example.testapp2.data.UnsplashItem
 import com.example.testapp2.data.cb.UnsplashResult
+import com.example.testapp2.shared.IMAGE_INTENT_KEY
+import com.example.testapp2.shared.helpers.paintAsyncImage
 import com.example.testapp2.ui.theme.TestApp2Theme
 
 class MainActivity : ComponentActivity(), UnsplashResult {
@@ -52,14 +57,9 @@ class MainActivity : ComponentActivity(), UnsplashResult {
         enableEdgeToEdge()
         val provider = UnsplashApiProvider()
         provider.fetchImages(this)
-        val images: List<Int> = listOf(
-            R.drawable.photo1,
-            R.drawable.photo2,
-            R.drawable.photo3,
-            R.drawable.photo4,
-            R.drawable.photo5,
-            R.drawable.photo6
-        )
+
+
+
         setContent {
 
             photos = remember { mutableStateOf(emptyList()) }
@@ -84,12 +84,12 @@ class MainActivity : ComponentActivity(), UnsplashResult {
 
                         ) {
 
-                        val onClick = { resId: Int ->
+                        val onClick = { image: UnsplashItem ->
                             val intent = Intent(
                                 this@MainActivity,
                                 ItemDetailsActivity::class.java
                             )
-                            intent.putExtra("resId", resId)
+                            intent.putExtra(IMAGE_INTENT_KEY, image)
                             startActivity(intent)
                         }
                         item {
@@ -105,11 +105,8 @@ class MainActivity : ComponentActivity(), UnsplashResult {
                             modifier = Modifier.fillMaxWidth()
                             )
                         }
-//                        items(photos.value) { photo ->
-//                             FetchedItem(photo)
-//                        }
-                        items(images) { resId ->
-                            CardItem(resId, onClick)
+                        items(photos.value) { photo ->
+                            FetchedItem(photo, onClick)
                         }
                     }
                 }
@@ -128,32 +125,22 @@ class MainActivity : ComponentActivity(), UnsplashResult {
 }
 
 @Composable
-fun CardItem(drawableId: Int, onClick: (Int) -> Unit) {
-    Card(shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.clickable(onClick = {
-            onClick(drawableId)
-        })
-    ) {
-    Image(
-        painter = painterResource(drawableId),
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(160.dp),
-    )
-    }
-}
-
-@Composable
-fun FetchedItem(image: UnsplashItem) {
+fun FetchedItem(image: UnsplashItem, onClick: (UnsplashItem) -> Unit) {
     Card(shape = RoundedCornerShape(16.dp)
         , modifier = Modifier
             .fillMaxWidth()
             .height(160.dp)
-
+            .clickable { onClick(image) }
         )
      {
+        Image(
+            painter = paintAsyncImage(LocalContext.current, image.urls?.regular),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(160.dp),
+        )
         Column (verticalArrangement = Arrangement.Bottom, modifier = Modifier.padding(16.dp).fillMaxHeight()) {
             Text(text = image.description ?: "No description", fontWeight = FontWeight.Bold)
             Text(text = image.user?.name ?: "No name")

@@ -1,5 +1,9 @@
 package com.example.testapp2.data
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class User(
     val bio: String?,
     val id: String?,
@@ -14,4 +18,4 @@ data class User(
     val total_photos: Int?,
     val twitter_username: String?,
     val username: String?
-)
+) : Parcelable
