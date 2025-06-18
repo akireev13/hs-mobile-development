@@ -5,6 +5,7 @@ import com.example.testapp2.data.UnsplashItem
 import com.example.testapp2.data.cb.UnsplashResult
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,6 +19,10 @@ import retrofit2.http.Headers
 private const val BASE_URL = "https://api.unsplash.com"
 
 private val retrofit by lazy {
+
+//    val interceptor = HttpLoggingInterceptor()
+//
+//    val client = OkHttpClient.Builder().addInterceptor(interceptor)
 
     val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
