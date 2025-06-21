@@ -1,4 +1,4 @@
-package com.example.testapp2.data
+package com.example.testapp2.data.unsplash
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

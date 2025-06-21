@@ -1,7 +1,9 @@
-package com.example.testapp2.data
+package com.example.testapp2.data.unsplash
 
 import android.os.Parcelable
+import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 
 @Parcelize
 data class CurrentUserCollection(
@@ -11,5 +13,5 @@ data class CurrentUserCollection(
     val published_at: String?,
     val title: String?,
     val updated_at: String?,
-//    val user: Any?
+    val user: @RawValue Any?
 ) : Parcelable

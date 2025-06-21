@@ -1,19 +1,19 @@
-package com.example.testapp2.data
+package com.example.testapp2.core.api
 
 import UnsplashApi
-import com.example.testapp2.data.UnsplashItem
+import UnsplashDetailsResult
 import com.example.testapp2.data.cb.UnsplashResult
+import com.example.testapp2.data.unsplash.SearchResponse
+import com.example.testapp2.data.unsplash.UnsplashDetailedItem
+import com.example.testapp2.data.unsplash.UnsplashItem
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
-import retrofit2.http.GET
-import retrofit2.http.Headers
 
 
 private const val BASE_URL = "https://api.unsplash.com"
@@ -73,6 +73,26 @@ class UnsplashApiProvider() {
 
             override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
                 cb.onFailSearchImages()
+            }
+        })
+    }
+
+    fun fetchImageDetails(cb: UnsplashDetailsResult, id: String) {
+
+        retrofit.fetchPhotoDetails(id).enqueue(object: Callback<UnsplashDetailedItem> {
+            override fun onResponse(
+                call: Call<UnsplashDetailedItem>,
+                response: Response<UnsplashDetailedItem>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    cb.onSuccessFetchImageDetails(response.body()!!)
+                } else {
+                    cb.onFailFetchImageDetails()
+                }
+            }
+
+            override fun onFailure(call: Call<UnsplashDetailedItem>, t: Throwable) {
+                cb.onFailFetchImageDetails()
             }
         })
     }

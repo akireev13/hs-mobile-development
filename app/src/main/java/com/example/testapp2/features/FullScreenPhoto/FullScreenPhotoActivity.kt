@@ -1,4 +1,4 @@
-package com.example.testapp2
+package com.example.testapp2.features.FullScreenPhoto
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,9 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import com.example.testapp2.shared.helpers.paintAsyncImage
-import com.example.testapp2.ui.theme.TestApp2Theme
+import com.example.testapp2.core.designsystem.TestApp2Theme
+import com.example.testapp2.core.util.paintAsyncImage
 
 class FullScreenPhotoActivity : ComponentActivity() {
 
@@ -24,7 +23,7 @@ class FullScreenPhotoActivity : ComponentActivity() {
                 TestApp2Theme {
                     Scaffold { innerPadding ->
                         Image(
-                            modifier = Modifier
+                            modifier = Modifier.Companion
                                 .padding(innerPadding)
                                 .fillMaxSize(),
                             painter = paintAsyncImage(LocalContext.current, imageUrl),

@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TestApp2">
         <activity
-            android:name=".MainActivity"
+            android:name=".features.MainActivity"
             android:exported="true"
 
             >
@@ -23,11 +23,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ItemDetailsActivity"
+            android:name=".features.ItemDetails.ItemDetailsActivity"
            >
         </activity>
         <activity
-            android:name=".FullScreenPhotoActivity"
+            android:name=".features.FullScreenPhoto.FullScreenPhotoActivity"
           >
         </activity>
     </application>

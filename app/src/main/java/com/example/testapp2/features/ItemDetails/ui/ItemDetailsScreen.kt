@@ -1,10 +1,5 @@
-package com.example.testapp2
+package com.example.testapp2.features.itemdetails.ui
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,60 +11,49 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil3.compose.rememberAsyncImagePainter
-import coil3.request.ImageRequest
-import com.example.testapp2.data.UnsplashItem
-import com.example.testapp2.shared.IMAGE_INTENT_KEY
-import com.example.testapp2.shared.helpers.paintAsyncImage
-import com.example.testapp2.ui.theme.TestApp2Theme
+import com.example.testapp2.core.designsystem.TestApp2Theme
+import com.example.testapp2.core.util.paintAsyncImage
+import com.example.testapp2.data.unsplash.UnsplashDetailedItem
+import com.example.testapp2.features.ItemDetails.ui.MetadataItem
+import com.example.testapp2.features.ItemDetails.ui.StatItem
+import com.example.unsplashdetails.ItemDetailsViewModel
 
-class ItemDetailsActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+@Composable
+fun ItemDetailsRoute(
+    id: String,
+    onClickPhoto: (String?) -> Unit,
+    viewModel: ItemDetailsViewModel = ItemDetailsViewModel()
+) {
+    val state by viewModel.state.observeAsState(ItemDetailsViewModel.UiState.Loading)
 
-        val onClickPhoto: (String?) -> Unit = { url ->
-            Intent(this, FullScreenPhotoActivity::class.java).apply {
-                putExtra("url", url)
-                startActivity(this)
-            }
-        }
+    LaunchedEffect(id) { viewModel.loadPhoto(id) }
 
-        val imageData = intent.extras!!.get(IMAGE_INTENT_KEY) as UnsplashItem
-        setContent {
-            TestApp2Theme {
-                Scaffold { innerPadding ->
-                    ItemDetailsScreen(imageData, Modifier.padding(innerPadding), onClickPhoto)
-                }
-            }
-        }
+    when (val ui = state) {
+        is ItemDetailsViewModel.UiState.Success -> ItemDetailsScreen(ui.photo, onClickPhoto = onClickPhoto)
+        ItemDetailsViewModel.UiState.Error -> ErrorScreen { viewModel.loadPhoto(id) }
+        else -> LoadingScreen()
     }
 }
 
 @Composable
 fun ItemDetailsScreen(
-    imageData: UnsplashItem,
-    modifier: Modifier = Modifier,
+    imageData: UnsplashDetailedItem,
     onClickPhoto: (String?) -> Unit
 ) {
+    TestApp2Theme {
+        Scaffold { innerPadding ->
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -96,7 +80,7 @@ fun ItemDetailsScreen(
                 Icon(Icons.Filled.Place, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
                 Spacer(Modifier.width(4.dp))
                 Text(
-                    imageData.user?.location ?: "Unknown location",
+                    imageData.location?.city ?: "Unknown location",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -122,15 +106,9 @@ fun ItemDetailsScreen(
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
             )
             Spacer(Modifier.weight(1f))
-            IconButton(onClick = {  }) {
-                Icon(Icons.Default.Add, contentDescription = null)
-            }
-            IconButton(onClick = {  }) {
-                Icon(Icons.Filled.FavoriteBorder, contentDescription = null)
-            }
-            IconButton(onClick = {  }) {
-                Icon(Icons.Filled.Star, contentDescription = null)
-            }
+            IconButton(onClick = { }) { Icon(Icons.Default.Add, contentDescription = null) }
+            IconButton(onClick = { }) { Icon(Icons.Filled.FavoriteBorder, contentDescription = null) }
+            IconButton(onClick = { }) { Icon(Icons.Filled.Star, contentDescription = null) }
         }
 
         HorizontalDivider()
@@ -141,18 +119,18 @@ fun ItemDetailsScreen(
                 .padding(16.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                MetadataItem("Camera", "NIKON D3200")
+                MetadataItem("Camera", imageData.exif?.name ?: "-")
                 Spacer(Modifier.height(8.dp))
-                MetadataItem("Focal Length", "18.0 mm")
+                MetadataItem("Focal Length", imageData.exif?.focal_length ?: "-")
                 Spacer(Modifier.height(8.dp))
-                MetadataItem("ISO", "100")
+                MetadataItem("ISO", imageData.exif?.iso?.toString() ?: "-")
             }
             Column(modifier = Modifier.weight(1f)) {
-                MetadataItem("Aperture", "f/5.0")
+                MetadataItem("Aperture", "f/${imageData.exif?.aperture ?: "-"}")
                 Spacer(Modifier.height(8.dp))
-                MetadataItem("Shutter Speed", "1/125 s")
+                MetadataItem("Shutter Speed", imageData.exif?.exposure_time ?: "-")
                 Spacer(Modifier.height(8.dp))
-                MetadataItem("Dimensions", "3906 × 4882")
+                MetadataItem("Dimensions", "${imageData.width} × ${imageData.height}")
             }
         }
 
@@ -164,37 +142,34 @@ fun ItemDetailsScreen(
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            StatItem("Views", "666K" )
-            StatItem("Downloads", "66 K")
+            StatItem("Views",  "-")
+            StatItem("Downloads", imageData.downloads?.toString() ?: "-")
             StatItem("Likes", imageData.likes.toString())
         }
 
         HorizontalDivider()
 
-        Row(
+        FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            AssistChip(onClick = {}, label = { Text("barcelona") })
-            AssistChip(onClick = { }, label = { Text("spain") })
+            imageData.tags?.take(10)?.forEach {
+                AssistChip(onClick = { }, label = { Text(it.title ?: "Not provided") })
+            }
+        }
+    }
         }
     }
 }
 
 @Composable
-fun MetadataItem(label: String, value: String) {
-    Column {
-        Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(value, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium))
-    }
+fun LoadingScreen() = Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    CircularProgressIndicator()
 }
 
 @Composable
-fun StatItem(label: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(value, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
-        Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
+fun ErrorScreen(onRetry: () -> Unit) = Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Button(onClick = onRetry) { Text("Retry") }
 }

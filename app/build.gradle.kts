@@ -65,4 +65,6 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.2.0")
     implementation("androidx.compose.material:material:1.8.2")
     implementation("androidx.compose.material3:material3:1.3.2")
+    implementation("androidx.compose.runtime:runtime-livedata:<compose_version>")
+
 }

@@ -1,7 +1,8 @@
 package com.example.testapp2.data.cb
 
-import com.example.testapp2.data.SearchResponse
-import com.example.testapp2.data.UnsplashItem
+import com.example.testapp2.data.unsplash.SearchResponse
+import com.example.testapp2.data.unsplash.UnsplashDetailedItem
+import com.example.testapp2.data.unsplash.UnsplashItem
 
 interface UnsplashResult {
     fun onSuccessFetchImages(images: List<UnsplashItem>)
@@ -11,4 +12,5 @@ interface UnsplashResult {
     fun onSuccessSearchImages(result: SearchResponse)
 
     fun onFailSearchImages()
+
 }

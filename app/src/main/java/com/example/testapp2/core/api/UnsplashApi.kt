@@ -1,8 +1,10 @@
-import com.example.testapp2.data.SearchResponse
-import com.example.testapp2.data.UnsplashItem
+import com.example.testapp2.data.unsplash.SearchResponse
+import com.example.testapp2.data.unsplash.UnsplashDetailedItem
+import com.example.testapp2.data.unsplash.UnsplashItem
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Headers
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 
@@ -16,4 +18,8 @@ interface UnsplashApi {
     @Headers(AuthHeader)
     @GET("/search/photos")
     fun searchPhotos(@Query ("query") query: String) : Call<SearchResponse>
+
+    @Headers(AuthHeader)
+    @GET("/photos/{id}")
+    fun fetchPhotoDetails(@Path("id") id: String) : Call<UnsplashDetailedItem>
 }

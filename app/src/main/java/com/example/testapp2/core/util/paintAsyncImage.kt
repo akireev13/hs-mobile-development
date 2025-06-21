@@ -1,4 +1,4 @@
-package com.example.testapp2.shared.helpers
+package com.example.testapp2.core.util
 
 import android.content.Context
 import androidx.compose.runtime.Composable
