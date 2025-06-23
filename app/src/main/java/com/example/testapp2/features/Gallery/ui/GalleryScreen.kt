@@ -32,7 +32,7 @@ import com.example.testapp2.features.Gallery.GalleryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GalleryScreen(viewModel: GalleryViewModel = GalleryViewModel(), onImageClick: (UnsplashItem) -> Unit) {
+fun GalleryScreen(onImageClick: (UnsplashItem) -> Unit,  viewModel: GalleryViewModel = GalleryViewModel()) {
     val photos = viewModel.photos.value
     val refreshing = viewModel.refreshing.value
     val search = rememberSaveable { mutableStateOf("") }

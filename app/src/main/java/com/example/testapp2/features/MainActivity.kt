@@ -15,7 +15,7 @@ import com.example.testapp2.features.ItemDetails.ItemDetailsActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
-    val viewModel: GalleryViewModel by viewModels()
+
 
     val onImageClick: (UnsplashItem) -> Unit = { image ->
         val intent = Intent(this, ItemDetailsActivity::class.java).apply {
@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            GalleryScreen(viewModel, onImageClick)
+            GalleryScreen(onImageClick)
         }
     }
 }

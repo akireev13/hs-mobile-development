@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("kotlin-parcelize")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -40,6 +41,7 @@ android {
         compose = true
     }
 }
+val roomVersion = "2.7.2"
 
 dependencies {
 
@@ -67,4 +69,9 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.3.2")
     implementation("androidx.compose.runtime:runtime-livedata:<compose_version>")
 
+    implementation("androidx.room:room-runtime:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+
+    // Optional: Kotlin Extensions and support for Coroutines
+    implementation("androidx.room:room-ktx:$roomVersion")
 }

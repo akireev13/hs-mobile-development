@@ -26,7 +26,7 @@ import com.example.testapp2.core.util.paintAsyncImage
 import com.example.testapp2.data.unsplash.UnsplashDetailedItem
 import com.example.testapp2.features.ItemDetails.ui.MetadataItem
 import com.example.testapp2.features.ItemDetails.ui.StatItem
-import com.example.unsplashdetails.ItemDetailsViewModel
+import com.example.itemdetails.ItemDetailsViewModel
 
 @Composable
 fun ItemDetailsRoute(

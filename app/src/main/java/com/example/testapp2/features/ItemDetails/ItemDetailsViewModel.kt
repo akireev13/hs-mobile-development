@@ -1,4 +1,4 @@
-package com.example.unsplashdetails
+package com.example.itemdetails
 
 import UnsplashDetailsResult
 import androidx.lifecycle.LiveData
