@@ -5,9 +5,9 @@ import com.example.testapp2.data.unsplash.model.UnsplashPhotoModel
 
 class UnsplashPhotoRepository(private val unsplashPhotoDao: UnsplashPhotoDAO)  {
     val allPhotos: LiveData<List<UnsplashPhotoModel>> = unsplashPhotoDao.getAllPhotos()
-    fun insert(photo: UnsplashPhotoModel) {
+    fun insert(photos: List<UnsplashPhotoModel>) {
         AppDatabase.databaseWriteExecutor.execute {
-            unsplashPhotoDao.insert(photo)
+            unsplashPhotoDao.insert(photos)
         }
     }
 }

@@ -15,7 +15,7 @@ interface UnsplashPhotoDAO {
     fun getAllPhotos(): LiveData<List<UnsplashPhotoModel>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(dog: UnsplashPhotoModel)
+    fun insert(photos: List<UnsplashPhotoModel>)
 
     @Query("DELETE FROM photos")
     fun deleteAll()

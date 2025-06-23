@@ -3,15 +3,20 @@ package com.example.testapp2.core.util
 import com.example.testapp2.data.unsplash.UnsplashItem
 import com.example.testapp2.data.unsplash.model.UnsplashPhotoModel
 
-fun toUnsplashPhotoModel(unsplashPhoto: UnsplashItem): UnsplashPhotoModel {
-    val imageId: Int = unsplashPhoto.id?.toIntOrNull() ?: 0 // Default to 0 if null or not a valid Int
+fun toUnsplashPhotoModel(unsplashPhotos: List<UnsplashItem>): List<UnsplashPhotoModel> {
 
-    val result: UnsplashPhotoModel = UnsplashPhotoModel(
+    val transformed = mutableListOf<UnsplashPhotoModel>()
+    unsplashPhotos.forEach { unsplashPhoto ->
+
+    val result = UnsplashPhotoModel(
         imageUrl = unsplashPhoto.urls?.regular ?: "",
         description = unsplashPhoto.description ?: "No description",
         authorName = unsplashPhoto.user?.name ?: "Unknown",
-        id = imageId
+        id = unsplashPhoto.id ?: "Something"
     )
 
-    return result
+    transformed.add(result)
+    }
+
+    return transformed
 }

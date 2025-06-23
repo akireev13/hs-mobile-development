@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "photos")
 class UnsplashPhotoModel(
     @PrimaryKey(autoGenerate = false)
-    var id: Int,
+    var id: String,
     @ColumnInfo(name = "imageUrl")
     val imageUrl: String,
     @ColumnInfo(name = "description")
