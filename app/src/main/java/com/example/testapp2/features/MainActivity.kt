@@ -25,6 +25,8 @@ class MainActivity : ComponentActivity() {
         startActivity(intent)
     }
 
+
+
     fun showDogs() {
         galleryViewModel.getUnsplashPhotosFromDatabase().observe(this){ it ->
             it.forEach { item ->
